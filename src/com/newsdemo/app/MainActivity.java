@@ -25,10 +25,15 @@ public class MainActivity extends Activity
 {
 	private ListView listView;
 	private TextView textView;
-	private List<String> dataList=new ArrayList<String>();
-	private ArrayAdapter<String> adapter;
+	//private List<String> dataList=new ArrayList<String>();
+	private List<CategoryItem> dataList=new ArrayList<CategoryItem>();
+	
+	//private ArrayAdapter<String> adapter;
+	private CategoryItemAdapter adapter;
+	
 	private static final int SHOW_RESPONSE=0;
 	private TextView responseText;
+	//对控件的设置需要在主线程中进行
 	private Handler handler=new Handler()
 								{
 									public void handleMessage(Message msg)
@@ -58,7 +63,7 @@ public class MainActivity extends Activity
         listView=(ListView) findViewById(R.id.list_view);
         textView=(TextView) findViewById(R.id.title_name);
         textView.setText("谢峰");
-       
+       /*
         dataList.add("item1");
         dataList.add("item2");
         dataList.add("item3");
@@ -67,8 +72,10 @@ public class MainActivity extends Activity
         dataList.add("item6");
         dataList.add("item7");
         dataList.add("item8");
-        dataList.add("item9");
-        adapter=new ArrayAdapter(this,android.R.layout.simple_list_item_1,dataList);
+        dataList.add("item9");*/
+       // adapter=new ArrayAdapter(this,android.R.layout.simple_list_item_1,dataList);
+       adapter=new CategoryItemAdapter(this,R.layout.title_item_layout,dataList);
+        
         listView.setAdapter(adapter);
         
         String category="top";
@@ -119,21 +126,27 @@ public class MainActivity extends Activity
     		//数据清空
     		dataList.clear();
 			JSONObject jsonObject=new JSONObject(jsonData);
+			//按关键字查找result
 			JSONObject result=jsonObject.getJSONObject("result");
+			//按关键字查找data
 			String data=result.getString("data");
+			//根据data的数据成立数据，进行提取
 			JSONArray jsonArray=new JSONArray(data);
 			int sum=jsonArray.length();
 			for(int i=0;i<jsonArray.length();++i)
 			{
+				
 				//重要信息的提取
 				JSONObject jsonObject2=jsonArray.getJSONObject(i);
-				String title=jsonObject2.getString("title");
-				dataList.add(title);	
+				String title=jsonObject2.getString("title");	
 				
 				String date=jsonObject2.getString("date");
 				String author_name=jsonObject2.getString("author_name");
 				String urlAdd=jsonObject2.getString("url");
 				String type=jsonObject2.getString("realtype");
+				
+				CategoryItem tempCate=new CategoryItem(author_name,date,title);
+				dataList.add(tempCate);
 			}			
 			adapter.notifyDataSetChanged();	
 			listView.setSelection(1);
