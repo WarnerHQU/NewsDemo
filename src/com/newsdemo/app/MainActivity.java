@@ -138,8 +138,7 @@ public class MainActivity extends Activity
 				
 				//重要信息的提取
 				JSONObject jsonObject2=jsonArray.getJSONObject(i);
-				String title=jsonObject2.getString("title");	
-				
+				String title=jsonObject2.getString("title");					
 				String date=jsonObject2.getString("date");
 				String author_name=jsonObject2.getString("author_name");
 				String urlAdd=jsonObject2.getString("url");
