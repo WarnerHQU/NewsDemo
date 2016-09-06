@@ -12,7 +12,7 @@
         android:textColor="#ff0000"/>
     <ScrollView 
         android:layout_width="match_parent"
-        android:layout_height="250dip">
+        android:layout_height="100dip">
         <TextView 
             android:id="@+id/response_text"
             android:layout_width="match_parent"
@@ -23,7 +23,8 @@
     <ListView 
         android:id="@+id/list_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:scrollbars="none">
         
         
     </ListView>
