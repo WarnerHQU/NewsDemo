@@ -12,23 +12,26 @@ import com.newsdemo.app.utils.HttpCallbackListener;
 import com.newsdemo.app.utils.HttpUtil;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.View;
 import android.view.Window;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MainActivity extends Activity
+public class MainActivity extends Activity implements OnItemClickListener
 {
 	private ListView listView;
 	private TextView textView;
-	//private List<String> dataList=new ArrayList<String>();
+	
 	private List<CategoryItem> dataList=new ArrayList<CategoryItem>();
 	
-	//private ArrayAdapter<String> adapter;
 	private CategoryItemAdapter adapter;
 	
 	private static final int SHOW_RESPONSE=0;
@@ -63,20 +66,10 @@ public class MainActivity extends Activity
         listView=(ListView) findViewById(R.id.list_view);
         textView=(TextView) findViewById(R.id.title_name);
         textView.setText("谢峰");
-       /*
-        dataList.add("item1");
-        dataList.add("item2");
-        dataList.add("item3");
-        dataList.add("item4");
-        dataList.add("item5");
-        dataList.add("item6");
-        dataList.add("item7");
-        dataList.add("item8");
-        dataList.add("item9");*/
-       // adapter=new ArrayAdapter(this,android.R.layout.simple_list_item_1,dataList);
-       adapter=new CategoryItemAdapter(this,R.layout.title_item_layout,dataList);
-        
+       
+       adapter=new CategoryItemAdapter(this,R.layout.title_item_layout,dataList); 
         listView.setAdapter(adapter);
+        listView.setOnItemClickListener(this);
         
         String category="top";
         //发出请求
@@ -144,7 +137,7 @@ public class MainActivity extends Activity
 				String urlAdd=jsonObject2.getString("url");
 				String type=jsonObject2.getString("realtype");
 				
-				CategoryItem tempCate=new CategoryItem(author_name,date,title);
+				CategoryItem tempCate=new CategoryItem(author_name,date,title,urlAdd);
 				dataList.add(tempCate);
 			}			
 			adapter.notifyDataSetChanged();	
@@ -153,9 +146,26 @@ public class MainActivity extends Activity
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-    	
-		
+		}	
 		
     }
+    
+    /**
+     *点击ListView时候的响应
+     * @param parent
+     * @param view
+     * @param position
+     * @param id
+     */
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id) 
+	{
+		CategoryItem tempCategoryItem=dataList.get(position);
+		
+		String urlAddress=tempCategoryItem.getNewsUrl();
+		
+		Intent intent=new Intent(this,NewsDetailActivity.class);
+		intent.putExtra("URL", urlAddress);
+		startActivity(intent);
+		
+	}
 }

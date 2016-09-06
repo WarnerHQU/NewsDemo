@@ -10,12 +10,21 @@ public class CategoryItem
 	private String author_name;
 	private String date;
 	private String newsTitle;
+	private String newsUrl;
 	
 	CategoryItem(String author_name,String date,String newsTitle)
 	{
 		this.setAuthor_name(author_name);
 		this.setDate(date);
 		this.setNewsTitle(newsTitle);
+	}
+	
+	CategoryItem(String author_name,String date,String newsTitle,String newsUrl)
+	{
+		this.setAuthor_name(author_name);
+		this.setDate(date);
+		this.setNewsTitle(newsTitle);
+		this.setNewsUrl(newsUrl);
 	}
 
 	public String getAuthor_name() {
@@ -40,6 +49,14 @@ public class CategoryItem
 
 	public void setNewsTitle(String newsTitle) {
 		this.newsTitle = newsTitle;
+	}
+
+	public String getNewsUrl() {
+		return newsUrl;
+	}
+
+	public void setNewsUrl(String newsUrl) {
+		this.newsUrl = newsUrl;
 	}
 	
 }
