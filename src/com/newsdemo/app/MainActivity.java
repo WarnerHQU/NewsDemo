@@ -3,6 +3,7 @@ package com.newsdemo.app;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +16,7 @@ import com.newsdemo.app.utils.HttpCallbackListener;
 import com.newsdemo.app.utils.HttpUtil;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -51,6 +53,7 @@ public class MainActivity extends Activity implements OnItemClickListener
 	private View tempView;
 	private LinearLayout ll;
 	private HorizontalScrollView hsv;
+	private ProgressDialog progressDialog; 
 	//新闻类型
 	private String[] categoryList={"头条","社会","国内","国际"
 			,"娱乐","体育","军事","科技","财经","时尚"};
@@ -86,7 +89,9 @@ public class MainActivity extends Activity implements OnItemClickListener
         responseText=(TextView) findViewById(R.id.response_text);
         listView=(ListView) findViewById(R.id.list_view);
         textView=(TextView) findViewById(R.id.title_name);
-        textView.setText("谢峰");
+        progressDialog= ProgressDialog.show(MainActivity.this, 
+     		   "请稍等", "正在下载数据...", true);
+        textView.setText("MyNews");
        
         
         tempView=LayoutInflater.from(this).
@@ -105,7 +110,7 @@ public class MainActivity extends Activity implements OnItemClickListener
         initHSV();
         listView.addHeaderView(tempView,null,false);
         
-       adapter=new CategoryItemAdapter(this,R.layout.title_item_layout,dataList); 
+        adapter=new CategoryItemAdapter(this,R.layout.title_item_layout,dataList); 
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this);
         
@@ -165,7 +170,7 @@ public class MainActivity extends Activity implements OnItemClickListener
 			categories.add(hashMap);
     	}
     	
-    	ConstomSimpleAdapter categoryAdapter = new ConstomSimpleAdapter(this,
+    	final ConstomSimpleAdapter categoryAdapter = new ConstomSimpleAdapter(this,
 				categories, R.layout.name_layout,
 				new String[] { "category_title" },
 				new int[] { R.id.name });
@@ -189,6 +194,8 @@ public class MainActivity extends Activity implements OnItemClickListener
     	// 设置Adapter
     	category.setAdapter(categoryAdapter);
     	
+    	
+    	
     	// 将网格视图组件添加到LinearLayout布局当中
     	ll.addView(category);
     	
@@ -210,7 +217,26 @@ public class MainActivity extends Activity implements OnItemClickListener
     							categoryTitle.setTextColor(0xFFFFFFFF);
     							categoryTitle
     									.setBackgroundResource(R.drawable.image_categorybar_item_selected_background);
+    							categoryAdapter.setSeclection(position);
+    							categoryAdapter.notifyDataSetChanged();
+    							
     							Toast.makeText(MainActivity.this, categoryTitle.getText(), Toast.LENGTH_SHORT).show();
+    							
+    							final String newAddress="http://v.juhe.cn/toutiao/index?type="+categoryCode.get(categoryTitle.getText())
+    									      +"&key=bad7cfabe911c929d7fbae195d1ee49c";
+    							//final ProgressDialog progressDialog = ProgressDialog.show(MainActivity.this, 
+									//   "请稍等", "正在下载数据...", true);
+    							sendRequest(newAddress);
+    							progressDialog.onStart();
+    							/*new Thread()
+    							{ 
+    						        @Override 
+    						        public void run() 
+    						        {              
+    						            sendRequest(newAddress);
+    						            progressDialog.dismiss();   // 关闭进度条对话框
+    						        }
+    							}.start();*/
     						}
 
     						
@@ -265,7 +291,14 @@ public class MainActivity extends Activity implements OnItemClickListener
     	try 
     	{
     		//数据清空
-    		dataList.clear();
+    		//dataList.clear();
+    		if(!dataList.isEmpty())
+    		{
+    			//新建适配器
+    			dataList=new ArrayList<CategoryItem>();
+    			adapter=new CategoryItemAdapter(this,R.layout.title_item_layout,dataList);
+    			listView.setAdapter(adapter);
+    		}
 			JSONObject jsonObject=new JSONObject(jsonData);
 			//按关键字查找result
 			JSONObject result=jsonObject.getJSONObject("result");
@@ -283,13 +316,15 @@ public class MainActivity extends Activity implements OnItemClickListener
 				String date=jsonObject2.getString("date");
 				String author_name=jsonObject2.getString("author_name");
 				String urlAdd=jsonObject2.getString("url");
-				String type=jsonObject2.getString("realtype");
+				//String type=jsonObject2.getString("realtype");
 				
 				CategoryItem tempCate=new CategoryItem(author_name,date,title,urlAdd);
 				dataList.add(tempCate);
 			}			
 			adapter.notifyDataSetChanged();	
-			listView.setSelection(1);
+			listView.setSelection(0);
+			
+			progressDialog.dismiss();
 			
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block

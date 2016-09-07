@@ -7,16 +7,19 @@
     <TextView 
         android:id="@+id/title_name"
         android:layout_width="match_parent"
-        android:layout_height="20.0dip"
-        android:gravity="center_horizontal"
-        android:textColor="#ff0000"/>
+        android:layout_height="30.0dip"
+        android:gravity="center"
+        android:textColor="#ccedae"
+        android:textSize="20sp"/>
     <ScrollView 
         android:layout_width="match_parent"
-        android:layout_height="100dip">
+        android:layout_height="100dip"
+        android:scrollbars="none">
         <TextView 
             android:id="@+id/response_text"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:textColor="#00FF00"/>
         
     </ScrollView>
     
@@ -24,7 +27,8 @@
         android:id="@+id/list_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scrollbars="none">
+        android:scrollbars="none"
+        android:divider="@drawable/image_list_separator_line">
         
         
     </ListView>
