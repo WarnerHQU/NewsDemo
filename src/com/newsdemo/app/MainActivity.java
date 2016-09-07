@@ -10,14 +10,18 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.newsdemo.app.custom.ConstomSimpleAdapter;
 import com.newsdemo.app.utils.HttpCallbackListener;
 import com.newsdemo.app.utils.HttpUtil;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -25,8 +29,10 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.GridView;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -88,14 +94,15 @@ public class MainActivity extends Activity implements OnItemClickListener
         ll=(LinearLayout) tempView.findViewById(R.id.news_category);
         hsv=(HorizontalScrollView) tempView.findViewById(R.id.news_horizontalSV);
         
-        for(int i=0;i<categoryList.length;++i)
+       /* for(int i=0;i<categoryList.length;++i)
         {
         	View view=LayoutInflater.from(this).
         			inflate(R.layout.news_category_name_layout, null);
         	TextView txt=(TextView) view.findViewById(R.id.news_category_name);
         	txt.setText(categoryList[i]);
         	ll.addView(view);
-        }
+        }*/
+        initHSV();
         listView.addHeaderView(tempView,null,false);
         
        adapter=new CategoryItemAdapter(this,R.layout.title_item_layout,dataList); 
@@ -142,6 +149,74 @@ public class MainActivity extends Activity implements OnItemClickListener
 			
 		}
 	}
+    
+    /**
+     * 初始化HorizontalScrollView控件
+     */
+    private void initHSV()
+    {
+    	// 定义一个List数组，用来存放HashMap对象
+    	final List<HashMap<String, String>> categories = 
+    			    new ArrayList<HashMap<String, String>>();
+    	for(String s:categoryList)
+    	{
+    		HashMap<String, String> hashMap = new HashMap<String, String>();
+			hashMap.put("category_title", s);
+			categories.add(hashMap);
+    	}
+    	
+    	ConstomSimpleAdapter categoryAdapter = new ConstomSimpleAdapter(this,
+				categories, R.layout.name_layout,
+				new String[] { "category_title" },
+				new int[] { R.id.name });
+    	
+    	// 创建一个网格视图, 用于实现新闻标题的布局
+    	GridView category = new GridView(this);
+    	// 设置单元格的背景色为透明，这样选择分类时就不会显示黄色背景了
+    	category.setSelector(new ColorDrawable(Color.TRANSPARENT));
+    	// 设置每一个新闻标题的宽度
+    	category.setColumnWidth(100);
+    	// 设置网格视图的列数
+    	category.setNumColumns(GridView.AUTO_FIT);
+    	// 设置对齐方式
+    	category.setGravity(Gravity.CENTER);
+    	// 根据单元格的宽度和数目计算网格视图的宽度
+    	int width =100 * categories.size();
+    	// 获取布局参数
+    	LayoutParams params = new LayoutParams(width, LayoutParams.MATCH_PARENT);
+    	// 设置参数
+    	category.setLayoutParams(params);
+    	// 设置Adapter
+    	category.setAdapter(categoryAdapter);
+    	
+    	// 将网格视图组件添加到LinearLayout布局当中
+    	ll.addView(category);
+    	
+    	// 添加单元格点击事件
+    	category.setOnItemClickListener(new OnItemClickListener() {
+    						TextView categoryTitle;
+
+    						public void onItemClick(AdapterView<?> parent, View view,
+    								int position, long id) 
+    						{
+    							for (int i = 0; i < parent.getCount(); i++) 
+    							{
+    								categoryTitle = (TextView) parent.getChildAt(i);
+    								categoryTitle.setTextColor(0XFFADB2AD);
+    								categoryTitle.setBackgroundDrawable(null);
+
+    							}
+    							categoryTitle = (TextView) view;
+    							categoryTitle.setTextColor(0xFFFFFFFF);
+    							categoryTitle
+    									.setBackgroundResource(R.drawable.image_categorybar_item_selected_background);
+    							Toast.makeText(MainActivity.this, categoryTitle.getText(), Toast.LENGTH_SHORT).show();
+    						}
+
+    						
+
+    					});
+    }
     
     /**
      * 发送网络请求
